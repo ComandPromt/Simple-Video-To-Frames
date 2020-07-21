@@ -2,6 +2,7 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -29,23 +30,38 @@ import javax.swing.event.ChangeListener;
 @SuppressWarnings("all")
 
 public class VideoFrames extends javax.swing.JFrame implements ActionListener, ChangeListener {
+
 	LinkedList<String> archivos = new LinkedList<String>();
+
 	static String os = System.getProperty("os.name");
 
 	static String separador = Metodos.saberSeparador(os);
+
 	JCheckBox conversionMultiple = new JCheckBox("Extraer frames de todos los videos de la carpeta");
+
 	String archivo = "";
+
 	private JTextField directorioGuardar;
 
-	public VideoFrames() {
+	public static String getSeparador() {
+		return separador;
+	}
 
-		setTitle("Periquito v3 About");
+	public VideoFrames() {
+		setIconImage(
+				Toolkit.getDefaultToolkit().getImage(VideoFrames.class.getResource("/imagenes/video_2_frame.png")));
+
+		setTitle("Video To Frames");
+
 		setType(Type.UTILITY);
+
 		initComponents();
 
 		try {
 			directorioGuardar.setText(new File(".").getCanonicalPath());
-		} catch (IOException e) {
+		}
+
+		catch (IOException e) {
 			//
 		}
 
@@ -86,72 +102,25 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 		imagenes.setEditable(false);
 		imagenes.setBackground(Color.WHITE);
 
-		JButton btnNewButton = new JButton("Guardar");
+		JButton btnNewButton = new JButton("Convertir");
 		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 16));
-		btnNewButton.setIcon(new ImageIcon(VideoFrames.class.getResource("/imagenes/save.png")));
+		btnNewButton.setIcon(new ImageIcon(VideoFrames.class.getResource("/imagenes/video_2_frame.png")));
 
 		btnNewButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
 
-				String directorioAGuardar = directorioGuardar.getText();
+				try {
 
-				String carpetaSalida = "";
+					String directorioAGuardar = directorioGuardar.getText();
 
-				if (!archivo.isEmpty() && !directorioAGuardar.isEmpty()) {
+					String carpetaSalida = "";
 
-					if (!conversionMultiple.isSelected()) {
+					if (!archivo.isEmpty() && !directorioAGuardar.isEmpty()) {
 
-						String nombreArchivo = archivo;
+						if (!conversionMultiple.isSelected()) {
 
-						carpetaSalida = directorioAGuardar + separador
-								+ nombreArchivo.substring(nombreArchivo.lastIndexOf(separador) + 1,
-										nombreArchivo.lastIndexOf("."))
-								+ separador + nombreArchivo.substring(nombreArchivo.lastIndexOf(separador) + 1,
-										nombreArchivo.length());
-
-						try {
-
-							Runtime.getRuntime()
-									.exec("mkdir " + carpetaSalida.substring(0, carpetaSalida.lastIndexOf(separador)));
-							Runtime.getRuntime().exec("ffmpeg -i " + archivo + " " + carpetaSalida + "_%06d.png");
-
-						}
-
-						catch (Exception e) {
-							//
-							e.printStackTrace();
-						}
-
-					}
-
-					else {
-
-						LinkedList<String> comprobacion = new LinkedList<String>();
-
-						String carpetaArchivo = archivo;
-
-						carpetaArchivo = carpetaArchivo.substring(0, carpetaArchivo.lastIndexOf(separador) + 1);
-
-						archivos.clear();
-
-						archivos = Metodos.directorio(carpetaArchivo, "avi", true);
-
-						comprobacion = Metodos.directorio(carpetaArchivo, "mp4", true);
-
-						comprobarVideos(comprobacion);
-
-						comprobacion = Metodos.directorio(carpetaArchivo, "mkv", true);
-
-						comprobarVideos(comprobacion);
-
-						comprobacion = Metodos.directorio(carpetaArchivo, "mpg", true);
-
-						comprobarVideos(comprobacion);
-
-						for (int i = 0; i < archivos.size(); i++) {
-
-							String nombreArchivo = archivos.get(i);
+							String nombreArchivo = archivo;
 
 							carpetaSalida = directorioAGuardar + separador
 									+ nombreArchivo.substring(nombreArchivo.lastIndexOf(separador) + 1,
@@ -159,7 +128,48 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 									+ separador + nombreArchivo.substring(nombreArchivo.lastIndexOf(separador) + 1,
 											nombreArchivo.length());
 
-							try {
+							Runtime.getRuntime()
+									.exec("mkdir " + carpetaSalida.substring(0, carpetaSalida.lastIndexOf(separador)));
+
+							Runtime.getRuntime().exec("ffmpeg -i " + archivo + " " + carpetaSalida + "_%06d.png");
+
+							Metodos.borrarArchivosDuplicados(carpetaSalida);
+
+						}
+
+						else {
+
+							LinkedList<String> comprobacion = new LinkedList<String>();
+
+							String carpetaArchivo = archivo;
+
+							carpetaArchivo = carpetaArchivo.substring(0, carpetaArchivo.lastIndexOf(separador) + 1);
+
+							archivos.clear();
+
+							archivos = Metodos.directorio(carpetaArchivo, "avi", true);
+
+							comprobacion = Metodos.directorio(carpetaArchivo, "mp4", true);
+
+							comprobarVideos(comprobacion);
+
+							comprobacion = Metodos.directorio(carpetaArchivo, "mkv", true);
+
+							comprobarVideos(comprobacion);
+
+							comprobacion = Metodos.directorio(carpetaArchivo, "mpg", true);
+
+							comprobarVideos(comprobacion);
+
+							for (int i = 0; i < archivos.size(); i++) {
+
+								String nombreArchivo = archivos.get(i);
+
+								carpetaSalida = directorioAGuardar + separador
+										+ nombreArchivo.substring(nombreArchivo.lastIndexOf(separador) + 1,
+												nombreArchivo.lastIndexOf("."))
+										+ separador + nombreArchivo.substring(nombreArchivo.lastIndexOf(separador) + 1,
+												nombreArchivo.length());
 
 								Runtime.getRuntime().exec(
 										"mkdir " + carpetaSalida.substring(0, carpetaSalida.lastIndexOf(separador)));
@@ -167,29 +177,27 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 								Runtime.getRuntime().exec("ffmpeg -i " + carpetaArchivo + archivos.get(i) + " "
 										+ carpetaSalida + "_%06d.png");
 
-							}
+								Metodos.borrarArchivosDuplicados(carpetaSalida);
 
-							catch (Exception e) {
-								//
 							}
 
 						}
 
 					}
 
+					int resp = JOptionPane.showConfirmDialog(null, "¿Desea abrir la carpeta de salida?");
+
+					if (resp == 0) {
+
+						Metodos.abrirCarpeta(directorioAGuardar);
+
+					}
+
 				}
 
-				int resp = JOptionPane.showConfirmDialog(null, "¿Desea abrir la carpeta de salida?");
+				catch (Exception e) {
+					//
 
-				if (resp == 0) {
-
-					try {
-						Metodos.abrirCarpeta(directorioAGuardar);
-					}
-
-					catch (IOException e) {
-						//
-					}
 				}
 
 			}
@@ -217,18 +225,25 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 		directorioGuardar.setFont(new Font("Tahoma", Font.PLAIN, 16));
 
 		JButton btnNewButton_1 = new JButton("");
+
 		btnNewButton_1.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent arg0) {
+
 				File[] files = Metodos.seleccionar(1, "Elija la carpeta de salida", "Elija la carpeta de salida");
 
 				try {
 					directorioGuardar.setText(files[0].getCanonicalPath());
-				} catch (Exception e1) {
+				}
+
+				catch (Exception e1) {
 
 				}
 
 			}
+
 		});
+
 		btnNewButton_1.setIcon(new ImageIcon(VideoFrames.class.getResource("/imagenes/abrir.png")));
 
 		conversionMultiple.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -270,7 +285,7 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 						.addGap(105)));
 
 		getContentPane().setLayout(layout);
-		setSize(new Dimension(490, 373));
+		setSize(new Dimension(490, 392));
 		setLocationRelativeTo(null);
 
 		javax.swing.border.TitledBorder dragBorder = new javax.swing.border.TitledBorder("Drop 'em");
@@ -302,12 +317,13 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 	}
 
 	public void stateChanged(ChangeEvent arg0) {
-		// TODO Auto-generated method stub
+		// 
 
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
+		//
 
 	}
+
 }
