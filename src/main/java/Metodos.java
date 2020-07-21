@@ -260,9 +260,7 @@ public abstract class Metodos {
 
 	public static List<String> borrarArchivosDuplicados(String directorio) {
 
-		LinkedList<String> listaImagenes = new LinkedList<String>();
-
-		listaImagenes = directorio(directorio, ".", true);
+		LinkedList<String> listaImagenes = directorio(directorio, ".", true);
 
 		LinkedList<String> listaImagenesSha = new LinkedList<String>();
 
