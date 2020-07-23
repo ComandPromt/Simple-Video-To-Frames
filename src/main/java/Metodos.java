@@ -20,12 +20,15 @@ public abstract class Metodos {
 	public static String seleccionarVideo() {
 
 		String archivo = "";
+
 		File[] files = seleccionar(2, "Video", "Elije un archivo de video");
 
 		if (files != null && files.length > 0) {
 
 			try {
+
 				archivo = files[0].getCanonicalPath();
+
 			}
 
 			catch (IOException e1) {
@@ -47,6 +50,13 @@ public abstract class Metodos {
 			return "\\";
 		}
 
+	}
+
+	public static void crearCarpeta(String carpeta) {
+
+		File directorio = new File(carpeta);
+
+		directorio.mkdir();
 	}
 
 	public static String extraerExtension(String nombreArchivo) {
@@ -104,7 +114,7 @@ public abstract class Metodos {
 
 		}
 
-		return cadena;
+		return cadena.substring(cadena.lastIndexOf(VideoFrames.getSeparador()) + 1, cadena.length());
 	}
 
 	public static String eliminarTodosLosEspacios(String cadena) {
@@ -332,8 +342,7 @@ public abstract class Metodos {
 
 						extensionArchivo = extraerExtension(fichero);
 
-						if (fichero.contains(" ")
-								|| fichero.length() > 5 && fichero.substring(0, fichero.length() - 5).contains(".")) {
+						if (fichero.length() > 5 && fichero.substring(0, fichero.length() - 5).contains(".")) {
 
 							renombrar(ruta + fichero, ruta + eliminarPuntos(fichero));
 

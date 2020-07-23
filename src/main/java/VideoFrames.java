@@ -53,8 +53,6 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 
 		setTitle("Video To Frames");
 
-		setType(Type.UTILITY);
-
 		initComponents();
 
 		try {
@@ -128,12 +126,14 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 									+ separador + nombreArchivo.substring(nombreArchivo.lastIndexOf(separador) + 1,
 											nombreArchivo.length());
 
-							Runtime.getRuntime()
-									.exec("mkdir " + carpetaSalida.substring(0, carpetaSalida.lastIndexOf(separador)));
+							Metodos.crearCarpeta(carpetaSalida.substring(0, carpetaSalida.lastIndexOf(separador)));
 
-							Runtime.getRuntime().exec("ffmpeg -i " + archivo + " " + carpetaSalida + "_%06d.png");
+							Runtime.getRuntime()
+									.exec("ffmpeg -i \"" + archivo + "\" \"" + carpetaSalida + "_%06d.png\"");
 
 							Metodos.borrarArchivosDuplicados(carpetaSalida);
+
+							directorioAGuardar = carpetaSalida.substring(0, carpetaSalida.lastIndexOf(separador));
 
 						}
 
@@ -171,11 +171,10 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 										+ separador + nombreArchivo.substring(nombreArchivo.lastIndexOf(separador) + 1,
 												nombreArchivo.length());
 
-								Runtime.getRuntime().exec(
-										"mkdir " + carpetaSalida.substring(0, carpetaSalida.lastIndexOf(separador)));
+								Metodos.crearCarpeta(carpetaSalida.substring(0, carpetaSalida.lastIndexOf(separador)));
 
-								Runtime.getRuntime().exec("ffmpeg -i " + carpetaArchivo + archivos.get(i) + " "
-										+ carpetaSalida + "_%06d.png");
+								Runtime.getRuntime().exec("ffmpeg -i \"" + carpetaArchivo + archivos.get(i) + "\" \""
+										+ carpetaSalida + "_%06d.png\"");
 
 								Metodos.borrarArchivosDuplicados(carpetaSalida);
 
@@ -185,7 +184,7 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 
 					}
 
-					int resp = JOptionPane.showConfirmDialog(null, "Â¿Desea abrir la carpeta de salida?");
+					int resp = JOptionPane.showConfirmDialog(null, "¿Desea abrir la carpeta de salida?");
 
 					if (resp == 0) {
 
@@ -196,7 +195,7 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 				}
 
 				catch (Exception e) {
-					//
+					e.printStackTrace();
 
 				}
 
@@ -248,19 +247,25 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 
 		conversionMultiple.setFont(new Font("Dialog", Font.BOLD, 14));
 
+		JLabel lblNewLabel_2 = new JLabel("");
+		lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
+
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup().addContainerGap(190, Short.MAX_VALUE)
+		layout.setHorizontalGroup(layout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(layout.createSequentialGroup().addContainerGap(176, Short.MAX_VALUE)
 						.addComponent(btnNewButton).addGap(139))
-				.addGroup(Alignment.TRAILING, layout.createSequentialGroup().addGap(37).addGroup(layout
-						.createParallelGroup(Alignment.TRAILING)
-						.addComponent(conversionMultiple, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 410,
-								Short.MAX_VALUE)
-						.addGroup(Alignment.LEADING, layout.createSequentialGroup()
+				.addGroup(layout.createSequentialGroup().addGap(37).addGroup(layout
+						.createParallelGroup(Alignment.LEADING)
+						.addComponent(conversionMultiple, GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
+						.addGroup(layout.createSequentialGroup()
 								.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(imagenes, GroupLayout.PREFERRED_SIZE, 328, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, layout.createSequentialGroup()
+								.addGroup(layout.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)
+										.addComponent(imagenes, GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)))
+						.addGroup(layout.createSequentialGroup()
 								.addComponent(
 										btnNewButton_1, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
 								.addGap(37)
@@ -269,23 +274,21 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 												Short.MAX_VALUE)
 										.addComponent(directorioGuardar, 325, 325, 325))))
 						.addGap(39)));
-		layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup().addGap(30)
-						.addGroup(layout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
-								.addComponent(imagenes, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE))
-						.addGap(25).addComponent(lblNewLabel_1)
-						.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addGroup(layout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(directorioGuardar, GroupLayout.PREFERRED_SIZE, 38,
-										GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 47,
-										GroupLayout.PREFERRED_SIZE))
-						.addGap(29).addComponent(btnNewButton).addGap(18).addComponent(conversionMultiple)
-						.addGap(105)));
+		layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING).addGroup(layout.createSequentialGroup()
+				.addGap(21)
+				.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
+						.addGroup(layout.createSequentialGroup().addComponent(lblNewLabel_2).addGap(18)
+								.addComponent(imagenes, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE)))
+				.addGap(25).addComponent(lblNewLabel_1)
+				.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(directorioGuardar, GroupLayout.PREFERRED_SIZE, 38, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnNewButton_1, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE))
+				.addGap(29).addComponent(btnNewButton).addGap(18).addComponent(conversionMultiple).addGap(105)));
 
 		getContentPane().setLayout(layout);
-		setSize(new Dimension(490, 392));
+		setSize(new Dimension(490, 403));
 		setLocationRelativeTo(null);
 
 		javax.swing.border.TitledBorder dragBorder = new javax.swing.border.TitledBorder("Drop 'em");
@@ -317,7 +320,7 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 	}
 
 	public void stateChanged(ChangeEvent arg0) {
-		// 
+		//
 
 	}
 
@@ -325,5 +328,4 @@ public class VideoFrames extends javax.swing.JFrame implements ActionListener, C
 		//
 
 	}
-
 }
