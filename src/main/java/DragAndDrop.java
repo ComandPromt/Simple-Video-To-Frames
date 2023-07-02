@@ -12,11 +12,14 @@ public class DragAndDrop {
 			final Listener listener) throws TooManyListenersException {
 
 		dropListener = new java.awt.dnd.DropTargetListener() {
+
+			@Override
 			public void dragEnter(java.awt.dnd.DropTargetDragEvent evt) {
 
 				if (isDragOk(evt)) {
 
 					if (c instanceof javax.swing.JComponent) {
+
 						javax.swing.JComponent jc = (javax.swing.JComponent) c;
 
 						jc.setBorder(dragBorder);
@@ -25,15 +28,21 @@ public class DragAndDrop {
 
 					evt.acceptDrag(java.awt.dnd.DnDConstants.ACTION_COPY);
 
-				} else {
+				}
+
+				else {
+
 					evt.rejectDrag();
 
 				}
+
 			}
 
+			@Override
 			public void drop(java.awt.dnd.DropTargetDropEvent evt) {
 
 				try {
+
 					java.awt.datatransfer.Transferable tr = evt.getTransferable();
 
 					if (tr.isDataFlavorSupported(java.awt.datatransfer.DataFlavor.javaFileListFlavor)) {
@@ -44,34 +53,45 @@ public class DragAndDrop {
 								.getTransferData(java.awt.datatransfer.DataFlavor.javaFileListFlavor);
 
 						java.io.File[] filesTemp = new java.io.File[fileList.size()];
+
 						fileList.toArray(filesTemp);
+
 						final java.io.File[] files = filesTemp;
 
 						if (listener != null) {
+
 							listener.filesDropped(files);
+
 						}
+
 						evt.getDropTargetContext().dropComplete(true);
 
 					}
-				} catch (Exception io) {
-					//
+
 				}
+
+				catch (Exception io) {
+
+				}
+
 			}
 
+			@Override
 			public void dragExit(DropTargetEvent dte) {
-				//
 			}
 
+			@Override
 			public void dragOver(DropTargetDragEvent dtde) {
-				//
 			}
 
+			@Override
 			public void dropActionChanged(DropTargetDragEvent dtde) {
-				//
 			}
+
 		};
 
 		PrintStream out = null;
+
 		makeDropTarget(out, c, recursive);
 
 	}
@@ -85,6 +105,7 @@ public class DragAndDrop {
 
 		c.addHierarchyListener(new java.awt.event.HierarchyListener() {
 
+			@Override
 			public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
 
 				java.awt.Component parent = c.getParent();
@@ -95,23 +116,32 @@ public class DragAndDrop {
 				}
 
 				else {
+
 					new java.awt.dnd.DropTarget(c, dropListener);
+
 				}
 
 			}
+
 		});
+
 		if (c.getParent() != null)
 			new java.awt.dnd.DropTarget(c, dropListener);
 
 		if (recursive && (c instanceof java.awt.Container)) {
 
 			java.awt.Container cont = (java.awt.Container) c;
+
 			java.awt.Component[] comps = cont.getComponents();
 
 			for (int i = 0; i < comps.length; i++) {
+
 				makeDropTarget(out, comps[i], recursive);
+
 			}
+
 		}
+
 	}
 
 	private boolean isDragOk(final java.awt.dnd.DropTargetDragEvent evt) {
@@ -119,23 +149,39 @@ public class DragAndDrop {
 		java.awt.datatransfer.DataFlavor[] flavors = null;
 
 		try {
+
 			flavors = evt.getCurrentDataFlavors();
-		} catch (Exception e) {
+
+		}
+
+		catch (Exception e) {
+
 			return (false);
+
 		}
 
 		boolean ok = false;
+
 		int i = 0;
+
 		while (!ok && i < flavors.length) {
+
 			if (flavors[i].equals(java.awt.datatransfer.DataFlavor.javaFileListFlavor))
+
 				ok = true;
+
 			i++;
+
 		}
 
 		return ok;
+
 	}
 
 	public interface Listener {
+
 		public abstract void filesDropped(java.io.File[] files);
+
 	}
+
 }

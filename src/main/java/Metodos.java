@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -32,7 +29,7 @@ public abstract class Metodos {
 			}
 
 			catch (IOException e1) {
-				//
+
 			}
 
 		}
@@ -40,14 +37,18 @@ public abstract class Metodos {
 		return archivo;
 	}
 
-	public static String saberSeparador(String os) {
+	public static String saberSeparador() {
 
-		if (os.equals("Linux")) {
-			return "/";
+		if (System.getProperty("os.name").contains("indow")) {
+
+			return "\\";
+
 		}
 
 		else {
-			return "\\";
+
+			return "/";
+
 		}
 
 	}
@@ -70,32 +71,45 @@ public abstract class Metodos {
 			extension = extension.toLowerCase();
 
 			if (extension.equals("peg")) {
+
 				extension = "jpeg";
+
 			}
 
 			if (extension.equals("fif")) {
+
 				extension = "jfif";
+
 			}
 
 			if (extension.equals("ebp")) {
+
 				extension = "webp";
+
 			}
 
 			if (extension.equals("ebm")) {
+
 				extension = "webm";
+
 			}
 
 			if (extension.equals("3u8")) {
+
 				extension = "m3u8";
+
 			}
 
 			if (extension.equals(".ts")) {
+
 				extension = "ts";
+
 			}
 
 		}
 
 		return extension;
+
 	}
 
 	public static String eliminarPuntos(String cadena) {
@@ -110,11 +124,14 @@ public abstract class Metodos {
 
 			cadena = eliminarTodosLosEspacios(cadena);
 
-		} catch (Exception e) {
+		}
+
+		catch (Exception e) {
 
 		}
 
 		return cadena.substring(cadena.lastIndexOf(VideoFrames.getSeparador()) + 1, cadena.length());
+
 	}
 
 	public static String eliminarTodosLosEspacios(String cadena) {
@@ -128,6 +145,7 @@ public abstract class Metodos {
 		cadena = cadena.replace(" ", "_");
 
 		return cadena;
+
 	}
 
 	public static void abrirCarpeta(String ruta) throws IOException {
@@ -137,17 +155,23 @@ public abstract class Metodos {
 			try {
 
 				if (VideoFrames.getOs().contentEquals("Linux")) {
+
 					Runtime.getRuntime().exec("xdg-open " + ruta);
+
 				}
 
 				else {
-					Runtime.getRuntime().exec("cmd /c explorer " + "\"" + ruta + "\"");
+
+					Runtime.getRuntime().exec("cmd /c C:\\Windows\\explorer.exe " + "\"" + ruta + "\"");
+
 				}
 
 			}
 
 			catch (IOException e) {
-				mensaje("Ruta inválida", 1);
+
+				mensaje("Ruta invalida", 1);
+
 			}
 
 		}
@@ -163,24 +187,27 @@ public abstract class Metodos {
 		switch (titulo) {
 
 		case 1:
+
 			tipo = JOptionPane.ERROR_MESSAGE;
+
 			tituloSuperior = "Error";
 
 			break;
 
 		case 2:
+
 			tipo = JOptionPane.INFORMATION_MESSAGE;
+
 			tituloSuperior = "Informacion";
 
 			break;
 
-		case 3:
+		default:
+
 			tipo = JOptionPane.WARNING_MESSAGE;
+
 			tituloSuperior = "Advertencia";
 
-			break;
-
-		default:
 			break;
 
 		}
@@ -196,6 +223,7 @@ public abstract class Metodos {
 	public static void renombrar(String ruta1, String ruta2) {
 
 		File f1 = new File(ruta1);
+
 		File f2 = new File(ruta2);
 
 		f1.renameTo(f2);
@@ -215,16 +243,21 @@ public abstract class Metodos {
 			StringBuilder bld = new StringBuilder();
 
 			for (int i = 0; i < b.length; i++) {
+
 				bld.append(Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1));
+
 			}
 
 			result = bld.toString();
 
-		} catch (Exception e) {
-			//
+		}
+
+		catch (Exception e) {
+
 		}
 
 		return result;
+
 	}
 
 	public static byte[] createChecksum(String filename) throws NoSuchAlgorithmException, IOException {
@@ -246,7 +279,9 @@ public abstract class Metodos {
 				numRead = fis.read(buffer);
 
 				if (numRead > 0) {
+
 					complete.update(buffer, 0, numRead);
+
 				}
 
 			}
@@ -260,46 +295,15 @@ public abstract class Metodos {
 		catch (IOException e) {
 
 			if (fis != null) {
+
 				fis.close();
+
 			}
 
 		}
 
 		return complete.digest();
-	}
 
-	public static List<String> borrarArchivosDuplicados(String directorio) {
-
-		LinkedList<String> listaImagenes = directorio(directorio, ".", true);
-
-		LinkedList<String> listaImagenesSha = new LinkedList<String>();
-
-		for (int i = 0; i < listaImagenes.size(); i++) {
-			listaImagenesSha.add(getSHA256Checksum(directorio + VideoFrames.getSeparador() + listaImagenes.get(i)));
-		}
-
-		List<String> duplicateList = listaImagenesSha.stream()
-
-				.collect(Collectors.groupingBy(s -> s)).entrySet().stream()
-
-				.filter(e -> e.getValue().size() > 1).map(e -> e.getKey()).collect(Collectors.toList());
-
-		int indice = 0;
-
-		for (String archivoRepetido : duplicateList) {
-
-			for (int i = 0; i < Collections.frequency(listaImagenesSha, archivoRepetido) - 1; i++) {
-
-				indice = listaImagenesSha.indexOf(archivoRepetido);
-
-				eliminarFichero(directorio + listaImagenes.get(indice));
-
-				listaImagenes.remove(indice);
-			}
-
-		}
-
-		return listaImagenes;
 	}
 
 	public static void eliminarFichero(String archivo) {
@@ -307,7 +311,9 @@ public abstract class Metodos {
 		File fichero = new File(archivo);
 
 		if (fichero.exists() && !fichero.isDirectory()) {
+
 			fichero.delete();
+
 		}
 
 	}
@@ -353,6 +359,7 @@ public abstract class Metodos {
 								|| extension.equals(extensionArchivo)) {
 
 							lista.add(fichero);
+
 						}
 
 					}
@@ -362,7 +369,9 @@ public abstract class Metodos {
 				else {
 
 					if (folder.isDirectory()) {
+
 						lista.add(fichero);
+
 					}
 
 				}
@@ -378,35 +387,45 @@ public abstract class Metodos {
 	public static java.io.File[] seleccionar(int tipo, String rotulo, String mensaje) {
 
 		JFileChooser chooser = new JFileChooser();
+
 		FileNameExtensionFilter filter = null;
 
 		switch (tipo) {
 
 		case 1:
-			filter = new FileNameExtensionFilter(rotulo, "jpg");
-			chooser.setFileFilter(filter);
-			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			break;
 
-		case 2:
-			filter = new FileNameExtensionFilter(rotulo, "jpg", "gif", "jpeg", "png", "avi", "mp4");
+			filter = new FileNameExtensionFilter(rotulo, "jpg");
+
 			chooser.setFileFilter(filter);
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
 			break;
 
 		default:
+
+			filter = new FileNameExtensionFilter(rotulo, "jpg", "gif", "jpeg", "png", "avi", "mp4");
+
+			chooser.setFileFilter(filter);
+
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
 			break;
 
 		}
 
 		if (!chooser.isMultiSelectionEnabled()) {
+
 			chooser.setMultiSelectionEnabled(true);
+
 		}
 
 		chooser.showOpenDialog(chooser);
+
 		File[] files = chooser.getSelectedFiles();
 
 		return files;
+
 	}
 
 }
